@@ -1,0 +1,75 @@
+import streamlit as st
+import fitz  # PyMuPDF
+from fpdf import FPDF
+import tempfile
+
+# Default quote rate
+DEFAULT_RATE = 100
+
+# PDF generation class
+class QuotePDF(FPDF):
+    def header(self):
+        self.set_font("Arial", "B", 14)
+        self.cell(0, 10, "PROJECT QUOTE: STRUCTURAL STEEL FABRICATION", ln=True, align="C")
+        self.set_font("Arial", "", 10)
+        self.cell(0, 10, "Field Welding, Installation, Material Breakdown", ln=True, align="C")
+        self.ln(5)
+
+    def section_title(self, title):
+        self.set_font("Arial", "B", 11)
+        self.cell(0, 10, title, ln=True)
+        self.ln(2)
+
+    def section_body(self, text):
+        self.set_font("Arial", "", 10)
+        self.multi_cell(0, 8, text)
+        self.ln()
+
+# Streamlit page setup
+st.set_page_config(page_title="Blueprint Quote Generator", layout="centered")
+st.title("📐 Structural Quote Generator")
+st.subheader("Upload a blueprint PDF and generate a professional quote.")
+
+# File upload and rate input
+uploaded_file = st.file_uploader("Upload Blueprint PDF", type=["pdf"])
+rate = st.number_input("Rate ($ per linear foot)", min_value=1, max_value=1000, value=DEFAULT_RATE)
+
+# If file uploaded and button clicked
+if uploaded_file and st.button("Generate Quote"):
+    # Save uploaded PDF to temporary file
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+        tmp_file.write(uploaded_file.read())
+        tmp_path = tmp_file.name
+
+    # Analyze blueprint pages
+    doc = fitz.open(tmp_path)
+    pages_scanned = []
+    for i, page in enumerate(doc):
+        text = page.get_text().strip()
+        if any(keyword in text for keyword in ["RTU", "W", "C15x", "HSS", "stair", "platform", "guard"]):
+            pages_scanned.append((i + 1, text[:200]))
+
+    # Generate PDF quote
+    quote = QuotePDF()
+    quote.add_page()
+    quote.section_title("Scanned Blueprint Summary")
+    for pg, preview in pages_scanned:
+        quote.section_body(f"Sheet Page {pg}:\n{preview}\n")
+
+    quote.section_title("Pricing Summary")
+    quote.section_body(f"""
+Total Sheets with Detected Structural Steel Scope: {len(pages_scanned)}
+Base Rate Applied: ${rate} per linear foot (field weld/install)
+
+*This is a draft quote based on parsed sheets. Final material & labor breakdowns would follow full detail takeoff.
+""")
+
+    # Export the quote PDF
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as out_file:
+        quote.output(out_file.name)
+        with open(out_file.name, "rb") as f:
+            st.success("✅ Quote generated successfully!")
+            st.download_button("📥 Download Quote PDF", data=f.read(), file_name="structural_quote.pdf", mime="application/pdf")
+streamlit==1.35.0
+PyMuPDF==1.23.22
+fpdf==1.7.2
