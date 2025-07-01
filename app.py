@@ -47,7 +47,10 @@ if uploaded_file and st.button("Generate Quote"):
     quote.add_page()
     quote.section_title("Blueprint Analysis")
     for pg, preview in pages_scanned:
-       File "/opt/render/project/src/app.py", line 50
+       File "/opt/render/project/src/app.py"
+          quote.section_body(f"Page {pg}:
+                             ^
+SyntaxError: unterminated f-string literal (detected at line 50)
           quote.section_body(f"Page {pg}:
                              ^
 SyntaxError: unterminated f-string literal (detected at line 50)
