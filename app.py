@@ -98,14 +98,19 @@ if uploaded_file and st.button("Generate Quote"):
         quote.section_body(f"Page {pg}:\n{preview}\n")
 {preview}
 
-    quote.section_title("Estimate Summary")
-    quote.section_body(f"""
+   quote = QuotePDF()
+quote.add_page()
+quote.section_title("Blueprint Analysis")
+for pg, preview in pages_scanned:
+    quote.section_body(f"Page {pg}:\n{preview}\n")
+
+quote.section_title("Estimate Summary")
+quote.section_body(f"""
 Detected Pages: {len(pages_scanned)}
 Rate: ${rate} per linear foot
 
 This is a preliminary estimate based on blueprint text scan.
 """)
-
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as out_file:
         quote.output(out_file.name)
         with open(out_file.name, "rb") as f:
