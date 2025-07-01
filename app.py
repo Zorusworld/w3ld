@@ -97,7 +97,6 @@ if uploaded_file and st.button("Generate Quote"):
     for pg, preview in pages_scanned:
         quote.section_body(f"Page {pg}:\n{preview}\n")
 {preview}
-")
 
     quote.section_title("Estimate Summary")
     quote.section_body(f"""
