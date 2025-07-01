@@ -95,7 +95,7 @@ if uploaded_file and st.button("Generate Quote"):
     quote.add_page()
     quote.section_title("Blueprint Analysis")
     for pg, preview in pages_scanned:
-        quote.section_body(f"Page {pg}:
+        quote.section_body(f"Page {pg}:\n{preview}\n")
 {preview}
 ")
 
