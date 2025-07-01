@@ -46,10 +46,25 @@ if uploaded_file and st.button("Generate Quote"):
         tmp_path = tmp_file.name
 
     # Analyze blueprint pages
-    doc = fitz.open(tmp_path)
-    pages_scanned = []
-    for i, page in enumerate(doc):
-        text = page.get_text().strip()
+  import fitz  # remove this
+
+...
+
+# OLD:
+# doc = fitz.open(tmp_path)
+# for i in range(len(doc)):
+#     page = doc[i]
+#     text = page.get_text()
+
+# NEW:
+import pdfplumber
+
+with pdfplumber.open(tmp_path) as pdf:
+    for i, page in enumerate(pdf.pages):
+        text = page.extract_text() or ""
+        if any(k in text for k in ["RTU", "W", "C15x", "HSS", "stair", "platform", "guard"]):
+            pages_scanned.append((i + 1, text[:200]))
+().strip()
         if any(keyword in text for keyword in ["RTU", "W", "C15x", "HSS", "stair", "platform", "guard"]):
             pages_scanned.append((i + 1, text[:200]))
 
