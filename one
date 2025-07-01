@@ -74,6 +74,3 @@ Base Rate Applied: ${rate} per linear foot (field weld/install)
         with open(out_file.name, "rb") as f:
             st.success("✅ Quote generated successfully!")
             st.download_button("📥 Download Quote PDF", data=f.read(), file_name="structural_quote.pdf", mime="application/pdf")
-streamlit==1.35.0
-PyMuPDF==1.23.22
-fpdf==1.7.2
