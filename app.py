@@ -46,8 +46,11 @@ if uploaded_file and st.button("Generate Quote"):
     quote = QuotePDF()
     quote.add_page()
     quote.section_title("Blueprint Analysis")
-    File "/opt/render/project/src/app.py", line 50
-          quote.section_body(f"Page {pg}:
+    for pg, preview in pages_scanned:
+        quote.section_body(f"Page {pg}:
+{preview}
+")
+
     quote.section_title("Estimate Summary")
     quote.section_body(f"""
 Detected Pages: {len(pages_scanned)}
